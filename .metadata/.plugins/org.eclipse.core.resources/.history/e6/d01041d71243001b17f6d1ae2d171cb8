@@ -1,0 +1,74 @@
+package readfile;
+
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
+public class ReadFileRok {
+
+	private String fileName;
+	
+	private int duration;
+	
+	private List<Exam> exams;
+	
+	public ReadFileRok(String fileName) {
+		this.duration = -1;
+		this.exams = null;
+		this.fileName = fileName;
+	}
+	
+	public final void readRok() {
+		JSONParser jsonParser = new JSONParser();
+		
+		try(FileReader fileReader = new FileReader(fileName)){
+			Object obj = jsonParser.parse(fileReader);
+			
+			if(obj == null) return;
+			
+			JSONObject jsonObject = (JSONObject) obj;
+			duration = ((Long)jsonObject.get("trajanje_u_danima")).intValue();
+			
+			exams  = new ArrayList<>();
+			JSONArray listeSala = (JSONArray) obj;
+			for (Object object : listeSala) {
+				exams.add(readRokFromJSON( (JSONObject) object));			
+			}
+			
+		} catch (FileNotFoundException e) {			
+			e.printStackTrace();
+			System.err.println("File not found!");
+			System.exit(1);
+		} catch (IOException e) {		
+			e.printStackTrace();
+			System.err.println("User unknown error while working with file from ReadFileRooms!");
+		} catch (ParseException e) {	
+			e.printStackTrace();
+			System.err.println("User error while parsing!");
+		}
+	}
+	
+	public Exam readRokFromJSON(JSONObject obj) {
+		String sifraIspita = (String) obj.get("sifra");
+		Integer brojPrijavljenih = ((Long) obj.get("prijavljeni")).intValue();
+		Integer polazeSeNaRacunarima = ((Long) obj.get("racunari")).intValue();
+		List<String> odseci = readOdseciFromJSONArray((JSONArray)obj.get("odseci"));
+		
+		return new Exam(sifraIspita,brojPrijavljenih,polazeSeNaRacunarima==1,odseci);			
+	}
+	
+	private List<String> readOdseciFromJSONArray(JSONArray jsonModules){
+		List<String> modules = new ArrayList<>();	
+		for (Object module : jsonModules) {
+			modules.add((String)module);
+		}		
+		return modules;
+	}
+}

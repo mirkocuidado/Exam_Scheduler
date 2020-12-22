@@ -1,0 +1,14 @@
+package generals;
+
+public class Termin {
+	private Room room;
+	private String time;
+	private int day;
+
+	public Termin(Room room, String time, int day) {
+		super();
+		this.room = room;
+		this.time = time ;
+		this.day = day;
+	}
+}

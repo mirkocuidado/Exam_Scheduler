@@ -1,0 +1,88 @@
+package main;
+
+
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
+
+import generals.Exam;
+import generals.Room;
+import generals.Termin;
+import readfile.ReadFileRok;
+import readfile.ReadFileRooms;
+
+public class Main {
+
+	public static void main(String[] argv) {
+		String roomss;
+		String rok;
+		String resenjeFileName = "result.txt";
+		
+		FileWriter myWriter = null;
+		
+		try {
+			myWriter = new FileWriter("filename.txt");
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+		if (argv.length < 2 || argv.length > 3) {
+			System.out.println("Neodgovarajuci broj ulaznih parametara");
+			return;
+		}
+		
+		roomss = argv[0];
+		rok = argv[1];
+		
+		ReadFileRooms readFileRooms = new ReadFileRooms(roomss);
+		ReadFileRok readFileRok = new ReadFileRok(rok);
+		
+		List<Room> rooms = readFileRooms.getRooms();
+		List<Exam> exams = readFileRok.getExams();
+		
+		String termins[] = { "08:00", "11:30", "15:00", "18:30" };
+		int duration = readFileRok.getDuration();
+		
+		CSP_Algorithm csp = new CSP_Algorithm();
+		
+		csp.initialDomain(exams, rooms, termins, duration);
+		
+		int level = 0;
+		
+		boolean solution = false;
+		
+		solution = csp.algorithm(exams, exams.size(), level, null);
+		
+		Set<Exam> exams_output = CSP_Algorithm.solution.keySet();
+		
+		for(int i=1; i<=duration; ++i) {
+			for(Exam e: CSP_Algorithm.solution.keySet()) {
+				System.out.println("DAY " + i);
+				
+				if(i == e.getDayOfTrial()) {
+					
+					System.out.println(e.getExamCodee() + " has " + e.getNumberOfSignedStudents());
+					List<Termin> tt = CSP_Algorithm.solution.get(e);
+					
+					int num = 0;
+					for(Termin t: tt) {
+						num += t.getRoom().getCapacity();
+						System.out.println(t.getDay() + "-" + t.getRoom().getName() + " - " + t.getTime());
+					}
+					System.out.println(num + "/" + e.getNumberOfSignedStudents());
+					System.out.println();
+				}
+			}
+		}
+		try {
+			myWriter.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return;
+	}
+}

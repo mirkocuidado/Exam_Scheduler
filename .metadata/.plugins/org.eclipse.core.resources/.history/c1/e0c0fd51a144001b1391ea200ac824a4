@@ -1,0 +1,284 @@
+package main;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import generals.Exam;
+import generals.Room;
+import generals.Termin;
+
+public class CSP_Algorithm {
+
+	public static HashMap<Exam, List<Termin>> solution = new HashMap<>();
+
+	public static List<Exam> exams = new ArrayList<>();
+
+	public void initialDomain(List<Exam> exams, List<Room> rooms, String termins[], int duration) {
+		for (Exam exam : exams) {
+			List<Termin> listOfTermins = new ArrayList<>();
+			for (int day = 1; day <= duration; ++day) {
+				for (Room room : rooms) {
+					if (room.getHasPCs() == 0 && exam.getIsOnPCs() == 1) {
+						// then it is not in the domain!
+					} else {
+						for (String time : termins) {
+							Termin termin = new Termin(room, time, day);
+							listOfTermins.add(termin);
+						}
+					}
+				}
+			}
+			exam.setDomain(listOfTermins);
+			listOfTermins = null;
+		}
+	}
+
+	class SortExams implements Comparator<Exam> 
+	{  
+		public int compare(Exam a, Exam b) 
+	    { 
+	        return b.getNumberOfSignedStudents() - a.getNumberOfSignedStudents(); 
+	    } 
+	} 
+	
+	List<Exam> sortExams(List<Exam> exams) {
+
+		Collections.sort(exams, new SortExams());
+
+		return exams;
+	}
+	
+	
+	public Exam getExamWithLeastPossibleOptions(List<Exam> exams) {
+		/*for(Exam e: exams) {
+			if(e.getNumOfPlaceTaken() != 0) {
+				return e;
+			}
+		}
+		
+		int min = 100000;
+		String examMinName = "";
+
+		for (Exam e : exams) {
+			if (e.getDomain().size() < min) {
+				examMinName = e.getExamCodee();
+				min = e.getDomain().size();
+			}
+		}
+
+		for (Exam e : exams) {
+			if (e.getExamCodee() == examMinName)
+				return e;
+		}*/
+
+		return exams.get(0);
+	}
+
+	class SortTermins implements Comparator<Termin> 
+	{  
+		public int compare(Termin a, Termin b) 
+	    { 
+	        return b.getRoom().getCapacity() - a.getRoom().getCapacity(); 
+	    } 
+	} 
+	
+	List<Termin> sortDomainForCurrentTermin(Exam exam) {
+
+		Collections.sort(exam.getDomain(), new SortTermins());
+
+		return exam.getDomain();
+	}
+
+	public boolean isValidToAssign(List<Termin> listForThisExam, Termin termin, Exam exam) {
+		if (listForThisExam.size() == 0)
+			return true;
+		
+		for (Termin t : listForThisExam) {
+			if (termin.getDay() != t.getDay() || termin.getRoom().getName().equals(t.getRoom().getName()) || !termin.getTime().equals(t.getTime()))
+				return false;
+		}
+		
+		return true;
+	}
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	public boolean algorithm(List<Exam> exams, int exams_size, int level, Exam exam_param) {	
+		if (level == exams_size) {
+			return true;
+		}
+
+		exams = sortExams(exams);
+		
+		Exam exam = getExamWithLeastPossibleOptions(exams);
+		if (exam == null) {
+			return true;
+		}
+		
+		if(exam_param!=null)
+		System.out.println(level + ": " + exam.getExamCodee() + " needs " + exam.getNumberOfSignedStudents() + ", but has " + exam_param.getNumOfPlaceTaken());
+		System.out.println(exam.getDomain().size() + " options left.");
+		
+		
+		
+		if(exam_param!=null)
+			exam.setNumOfPlaceTaken(exam_param.getNumOfPlaceTaken());
+		
+		int flagFound = 0;
+		for(Exam e: solution.keySet()) {
+			if(e.equals(exam)) {
+				flagFound = 1;
+			}
+		}
+		if (flagFound == 0) {
+			solution.put(exam, new ArrayList<>());
+		}
+
+		exam.setDomain(sortDomainForCurrentTermin(exam));
+
+		for (int i = 0; i < exam.getDomain().size(); i++) {
+			Termin termin = exam.getDomain().get(i);
+
+			List<Termin> solution_termins_for_exam = new ArrayList<>();
+			
+			for(Exam e: solution.keySet()) {
+				if(e.equals(exam)) {
+					solution_termins_for_exam = solution.get(e);
+				}
+			}
+			
+			if (isValidToAssign(solution_termins_for_exam, termin, exam)) {
+
+				/***** ADD TO LIST FOR TAKEN ONES AND ADD THE STUDENTS *****/
+				for(Exam e: solution.keySet()) {
+					if(e.equals(exam)) {
+						solution.get(e).add(termin);
+					}
+				}
+				exam.setNumOfPlaceTaken(termin.getRoom().getCapacity() + exam.getNumOfPlaceTaken());
+				
+				exam.setDayOfTrial(termin.getDay());
+				
+				List<Exam> copy_exams = new ArrayList<>();
+				
+				for(Exam e: exams) {
+					
+					if(e.getNumOfPlaceTaken() <= e.getNumberOfSignedStudents()) {
+						Exam copy_exam = new Exam(e.getExamCodee(), e.getNumberOfSignedStudents(), e.getIsOnPCs(), e.getModules());
+						
+						if(e.equals(exam)) 
+							copy_exam.setNumOfPlaceTaken(termin.getRoom().getCapacity() + copy_exam.getNumOfPlaceTaken());
+						
+						List<Termin> copy_termins = new ArrayList<>();
+						for(Termin termin_iter: e.getDomain()) {
+							Termin copy_termin = new Termin(termin_iter.getRoom(), termin_iter.getTime(), termin_iter.getDay());
+							copy_termins.add(copy_termin);
+						}
+					
+					
+						boolean sameYearAndModule = exam.checkIfExamsAreSameYearAndSameModuleUpgrade(e);
+						int dayOfRok = -1; 
+						if(sameYearAndModule == true && exam.equals(e)==false) 
+							dayOfRok = termin.getDay();
+						
+						Set<Termin> toBeRemoved = new HashSet<Termin>();
+						
+						for(int j=0; j<copy_termins.size(); ++j) {
+							
+							if(copy_termins.get(j).equals(termin) == true) {
+								toBeRemoved.add(copy_termins.get(j));
+							}
+							
+							if(exam.equals(e) == false) {
+								if(dayOfRok == copy_termins.get(j).getDay()) {
+									toBeRemoved.add(copy_termins.get(j));
+								}
+							}
+							else {
+								if(termin.getDay() == copy_termins.get(j).getDay() && termin.getRoom().equals(copy_termins.get(j).getRoom())) {
+									toBeRemoved.add(copy_termins.get(j));
+								}
+							}
+						}
+						
+						for(Termin t: toBeRemoved) {
+							copy_termins.remove(t);
+						}
+						
+						copy_exam.setDomain(copy_termins);
+						
+						copy_exams.add(copy_exam);
+					}
+				}
+				
+				
+				int isDone = 0;
+				if(exam.getNumberOfSignedStudents() <= exam.getNumOfPlaceTaken()) {
+					copy_exams.remove(exam);
+					isDone = 1;
+				}
+				else {
+					isDone = 0;
+				}
+				
+				if (algorithm(copy_exams, exams_size, level + isDone, (isDone==1)? null: exam) == true) {
+					return true;
+				} else {
+					for(Exam e: solution.keySet()) {
+						if(e.equals(exam)) {
+							solution.get(e).remove(termin);
+						}
+					}
+					
+					
+					for(Exam e: copy_exams) {
+						e.getDomain().add(termin);
+					}
+				}
+				
+				
+			}
+		}
+		
+		
+		if(exam.getNumOfPlaceTaken() >= exam.getNumberOfSignedStudents()) {
+			return true;
+		}
+		else {
+			System.out.println("AAA");
+			System.exit(1);
+			return false;
+		}
+
+	}
+}

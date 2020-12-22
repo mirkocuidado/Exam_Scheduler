@@ -1,0 +1,51 @@
+package generals;
+
+import java.util.List;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class Exam {
+	
+	private static class ExamCode{
+		
+		private String godinaAkreditacije;
+		private Character studijskiProgram;
+		private String maticnaKatedra;
+		private int godinaStudija;
+		private String nazivPredmeta;
+		
+		public ExamCode(String examCode) {
+			Pattern pattern = Pattern.compile("^(\\d{2})(\\w)(\\d{2})(\\d{1})(\\w{1,4})$", Pattern.UNICODE_CHARACTER_CLASS);
+			Matcher matcher = pattern.matcher(examCode);
+			if(matcher.find()) {
+				godinaAkreditacije = matcher.group(1);
+				studijskiProgram = matcher.group(2).charAt(0);
+				maticnaKatedra = matcher.group(3);
+				godinaStudija = Integer.parseInt(matcher.group(4));
+				nazivPredmeta = matcher.group(5);
+			}
+		}
+						
+		private void izvuciDeloveIzSifrePredmeta(String sifraPredmeta) {
+			
+		}
+	}
+	
+	private ExamCode sifraIspita;
+	private int brojPrijavljenihStudenata;
+	private Boolean polazeSeNaRacunarima;
+	private List<String> nudiSeNaOdsecima;
+	
+	private String sifraIspitaString;
+	
+	public Ispit(String sifraIspita, int brojPrijavljenihStudenata, Boolean polazeSeNaRacunarima,
+			List<String> nudiSeNaOdsecima) {
+		super();
+		this.sifraIspita = new SifraIspita(sifraIspita);
+		this.brojPrijavljenihStudenata = brojPrijavljenihStudenata;
+		this.polazeSeNaRacunarima = polazeSeNaRacunarima;
+		this.nudiSeNaOdsecima = nudiSeNaOdsecima;
+		this.sifraIspitaString = sifraIspita;
+	}
+}
