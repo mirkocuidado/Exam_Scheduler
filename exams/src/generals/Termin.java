@@ -12,14 +12,13 @@ public class Termin {
 		this.day = day;
 	}
 	
-	public Termin clone() {
-		try {
-			super.clone();
-		} catch (CloneNotSupportedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return new Termin(null, time, day);
+	@Override
+	public boolean equals(Object obj) {
+	 if(obj instanceof Termin) {
+		 Termin termin = (Termin) obj;
+		 return termin.getDay() == day && termin.getRoom().getName() == room.getName() && termin.getTime().equals(time);
+	 }
+	 return false;
 	}
 
 	public Room getRoom() {
@@ -44,14 +43,5 @@ public class Termin {
 
 	public void setDay(int day) {
 		this.day = day;
-	}
-	
-	@Override
-	public boolean equals(Object obj) {
-	 if(obj instanceof Termin) {
-		 Termin termin = (Termin) obj;
-		 return termin.getDay() == day && termin.getRoom().getName() == room.getName() && termin.getTime().equals(time);
-	 }
-	 return false;
 	}
 }

@@ -1,6 +1,7 @@
 package generals;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -80,45 +81,26 @@ public class Exam {
 	private int numberOfSignedStudents;
 	private int isOnPCs;
 	private List<String> modules;
-	
 	private String examCodee;
 	
 	private int dayOfTrial;
-	
-	
-	
-	public int getDayOfTrial() {
-		return dayOfTrial;
-	}
-
-	public void setDayOfTrial(int dayOfTrial) {
-		this.dayOfTrial = dayOfTrial;
-	}
-
-	private List<Termin> domain;
 	private int numOfPlaceTaken;
 	
-	public List<Termin> getDomain() {
-		return domain;
+	private List<Termin> domain;
+	
+	public Exam(String examCodee, int numberOfSignedStudents, int isOnPCs, List<String> modules) {
+		this.examCode = new ExamCode(examCodee);
+		this.numberOfSignedStudents = numberOfSignedStudents;
+		this.isOnPCs = isOnPCs;
+		this.modules = modules;
+		this.examCodee = examCodee;
+		this.domain = new ArrayList<>();
 	}
-
-	public void setDomain(List<Termin> domain) {
-		this.domain = domain;
-	}
-
-	public int getNumOfPlaceTaken() {
-		return numOfPlaceTaken;
-	}
-
-	public void setNumOfPlaceTaken(int numOfPlaceTaken) {
-		this.numOfPlaceTaken = numOfPlaceTaken;
-	}
-
+	
 	public boolean checkIfExamsAreSameYearAndSameModule(Exam e) {
 		
 		if(examCode.getGodinaStudija() != e.getExamCode().getGodinaStudija()) return false;
 		
-		//System.out.println(examCode.getGodinaStudija() + " " + e.getExamCode().getGodinaStudija());
 		List<String> eListOfModules = e.getModules();
 		for(String module: modules) {
 			for(String m: eListOfModules) {
@@ -129,7 +111,7 @@ public class Exam {
 		return false;
 	}
 	
-public boolean checkIfExamsAreSameYearAndSameModuleUpgrade(Exam e) { // useless
+	public boolean checkIfExamsAreSameYearAndSameModuleUpgrade(Exam e) { // useless
 		
 		if(examCode.getGodinaStudija() != e.getExamCode().getGodinaStudija()) return false;
 		
@@ -146,25 +128,48 @@ public boolean checkIfExamsAreSameYearAndSameModuleUpgrade(Exam e) { // useless
 		return false;
 	}
 	
-
-public boolean checkIfExamsAreSameModule(Exam e) {
-	List<String> eListOfModules = e.getModules();
-	for(String module: modules) {
-		for(String m: eListOfModules) {
-			if(module.equals(m) == true) return true;
+	public boolean checkIfExamsAreSameModule(Exam e) {
+		List<String> eListOfModules = e.getModules();
+		for(String module: modules) {
+			for(String m: eListOfModules) {
+				if(module.equals(m) == true) return true;
+			}
 		}
+	
+		return false;
 	}
 	
-	return false;
-}
+	@Override
+	public boolean equals(Object obj) {
+	 if(obj instanceof Exam) {
+		 Exam exam = (Exam) obj;
+		 return exam.examCodee.equals(this.examCodee);
+	 }
+	 return false;
+	}
 
-	public Exam(String examCodee, int numberOfSignedStudents, int isOnPCs, List<String> modules) {
-		this.examCode = new ExamCode(examCodee);
-		this.numberOfSignedStudents = numberOfSignedStudents;
-		this.isOnPCs = isOnPCs;
-		this.modules = modules;
-		this.examCodee = examCodee;
-		this.domain = new ArrayList<>();
+	public int getDayOfTrial() {
+		return dayOfTrial;
+	}
+
+	public void setDayOfTrial(int dayOfTrial) {
+		this.dayOfTrial = dayOfTrial;
+	}
+	
+	public List<Termin> getDomain() {
+		return domain;
+	}
+
+	public void setDomain(List<Termin> domain) {
+		this.domain = domain;
+	}
+
+	public int getNumOfPlaceTaken() {
+		return numOfPlaceTaken;
+	}
+
+	public void setNumOfPlaceTaken(int numOfPlaceTaken) {
+		this.numOfPlaceTaken = numOfPlaceTaken;
 	}
 
 	public ExamCode getExamCode() {
@@ -206,16 +211,4 @@ public boolean checkIfExamsAreSameModule(Exam e) {
 	public void setExamCodee(String examCodee) {
 		this.examCodee = examCodee;
 	}
-	
-	@Override
-	public boolean equals(Object obj) {
-	 if(obj instanceof Exam) {
-		 Exam exam = (Exam) obj;
-		 return exam.examCodee.equals(this.examCodee);
-	 }
-	 return false;
-	}
-	
-	
-	
 }

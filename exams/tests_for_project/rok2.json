@@ -2,7 +2,7 @@
    "trajanje_u_danima":1,
    "ispiti":[
       {
-         "sifra":"13С111П1",
+         "sifra":"13С112П1",
          "prijavljeni":180,
          "racunari":0,
          "odseci":[
@@ -50,7 +50,7 @@
          ]
       },
       {
-         "sifra":"13Е064НФ",
+         "sifra":"13Е063НФ",
          "prijavljeni":10,
          "racunari":0,
          "odseci":[
@@ -74,7 +74,7 @@
          ]
       },
       {
-         "sifra":"13Е054ПО",
+         "sifra":"13Е053ПО",
          "prijavljeni":10,
          "racunari":0,
          "odseci":[
@@ -82,7 +82,7 @@
          ]
       },
       {
-         "sifra":"13Е024РПОГ",
+         "sifra":"13Е023РПОГ",
          "prijavljeni":15,
          "racunari":0,
          "odseci":[
@@ -90,7 +90,7 @@
          ]
       },
       {
-         "sifra":"13Е034АС",
+         "sifra":"13Е033АС",
          "prijavljeni":15,
          "racunari":0,
          "odseci":[
