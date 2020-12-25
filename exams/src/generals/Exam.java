@@ -111,6 +111,20 @@ public class Exam {
 		return false;
 	}
 	
+	public static boolean checkIfExamsAreSameYearAndSameModuleS(Exam e1, Exam e2) {
+		
+		if(e1.getExamCode().getGodinaStudija() != e2.getExamCode().getGodinaStudija()) return false;
+		
+		List<String> eListOfModules = e1.getModules();
+		for(String module: e1.getModules()) {
+			for(String m: eListOfModules) {
+				if(module.equals(m) == true) return true;
+			}
+		}
+		
+		return false;
+	}
+	
 	public boolean checkIfExamsAreSameYearAndSameModuleUpgrade(Exam e) { // useless
 		
 		if(examCode.getGodinaStudija() != e.getExamCode().getGodinaStudija()) return false;

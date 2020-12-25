@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
-import backtrack_only.BackTrack;
+import backtrack_only.Algorithm;
 import backtrack_plus_forward.CSP_Algorithm;
 import generals.Exam;
 import generals.Reserve;
@@ -19,7 +19,7 @@ public class Main {
 	public static void main(String[] argv) {
 		String roomss;
 		String rok;
-		String resenjeFileName = "result.csv";
+		String resenjeFileName = "result_no_cost1.csv";
 		
 		FileWriter myWriter = null;
 		
@@ -50,13 +50,13 @@ public class Main {
 		
 		int size = exams.size();
 		
-		BackTrack algorithm = new BackTrack(exams, size);
+		Algorithm algorithm = new Algorithm(exams, size);
 		
 		List<List<Reserve>> domains = algorithm.initializeDomains(rooms, exams, duration);
 		
 		boolean solution_exists = algorithm.algorithm(domains, level);
 		
-		Reserve[] solution = (solution_exists == true) ? BackTrack.solution : null;
+		Reserve[] solution = (solution_exists == true) ? Algorithm.solution : null;
 		
 		if(solution == null) {
 			System.out.println("Solution does not exist!");
@@ -64,7 +64,7 @@ public class Main {
 		}
 		else {
 			
-			HashMap<Exam, List<Termin>> final_solution = BackTrack.transform();
+			HashMap<Exam, List<Termin>> final_solution = Algorithm.transform();
 			
 			try {
 				myWriter = new FileWriter(resenjeFileName);

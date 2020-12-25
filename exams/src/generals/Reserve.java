@@ -1,6 +1,8 @@
 package generals;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class Reserve {
@@ -9,12 +11,16 @@ public class Reserve {
 	private int day;
 	private String time;
 	private List<Room> rooms = new ArrayList<>();
+	
+	private int costOfReserve;
 
 	public Reserve(Exam exam, int day, String time, List<Room> rooms) {
 		this.exam = exam;
 		this.day = day;
 		this.time = time;
 		this.rooms = rooms;
+		for(Room r : rooms)
+			costOfReserve = r.getIsOnETF()*10 + r.getNumberOfPeople()*12;
 	}
 
 	public Exam getExam() {
@@ -47,5 +53,13 @@ public class Reserve {
 
 	public void setRooms(List<Room> rooms) {
 		this.rooms = rooms;
+	}
+
+	public int getCostOfReserve() {
+		return costOfReserve;
+	}
+
+	public void setCostOfReserve(int costOfReserve) {
+		this.costOfReserve = costOfReserve;
 	}
 }
