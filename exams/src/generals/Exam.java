@@ -1,9 +1,9 @@
 package generals;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -207,8 +207,41 @@ public class Exam {
 	public String getExamCodee() {
 		return examCodee;
 	}
+	
+	public void removeTerminFromList(Termin t) {
+		for(int i=0; i<domain.size();i++) {
+			Termin tt = domain.get(i);
+			if(tt.equals(t)) {
+				domain.remove(tt);
+			}
+		}
+	}
+	
+	public void removeTerminFromList(String s) {
+		for(int i=0; i<domain.size();i++) {
+			Termin tt = domain.get(i);
+			String ss = tt.getDay()+tt.getTime();
+			if(ss.equals(s)) {
+				domain.remove(tt);
+			}
+		}
+	}
 
 	public void setExamCodee(String examCodee) {
 		this.examCodee = examCodee;
+	}
+	
+	private static class SortExams implements Comparator<Exam> {
+
+		@Override
+		public int compare(Exam e1, Exam e2) {
+			return e2.getNumberOfSignedStudents() - e1.getNumberOfSignedStudents();
+		}
+		
+	}
+	
+	public static List<Exam> sortExamsByStudentsApplied(List<Exam> exams) {
+		Collections.sort(exams, new SortExams());
+		return exams;
 	}
 }

@@ -1,14 +1,14 @@
 package main;
-
-
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
+import backtrack_only.BackTrack;
+import backtrack_plus_forward.CSP_Algorithm;
 import generals.Exam;
+import generals.Reserve;
 import generals.Room;
 import generals.Termin;
 import readfile.ReadFileRok;
@@ -24,7 +24,7 @@ public class Main {
 		FileWriter myWriter = null;
 		
 		if (argv.length < 2 || argv.length > 3) {
-			System.out.println("Neodgovarajuci broj ulaznih parametara");
+			System.out.println("Invalid number of parameters!");
 			return;
 		}
 		
@@ -46,87 +46,97 @@ public class Main {
 		
 		int level = 0;
 		
-		boolean solution = false;
+		exams = Exam.sortExamsByStudentsApplied(exams);
 		
-		solution = csp.algorithm(exams, exams.size(), level, null, "f0");
+		int size = exams.size();
 		
-		if(solution==false) {
-			System.out.println("NOT POSSIBLE!");
+		BackTrack algorithm = new BackTrack(exams, size);
+		
+		List<List<Reserve>> domains = algorithm.initializeDomains(rooms, exams, duration);
+		
+		boolean solution_exists = algorithm.algorithm(domains, level);
+		
+		Reserve[] solution = (solution_exists == true) ? BackTrack.solution : null;
+		
+		if(solution == null) {
+			System.out.println("Solution does not exist!");
 			System.exit(1);
 		}
-		
-		try {
-			myWriter = new FileWriter(resenjeFileName);
-		
-			for(int day = 1; day <= duration; ++day) {
+		else {
 			
-				String [][] matrix = new String[5][rooms.size()+1];
-				
-				matrix[0][0] = "Dan" + day;
-				
-				for(int i = 1; i < 5; i++) {
-					matrix[i][0] = termins[i-1]; 
-				}
-				
-				for(int j=1; j<rooms.size()+1; j++) {
-					matrix[0][j] = rooms.get(j-1).getName();
-				}
+			HashMap<Exam, List<Termin>> final_solution = BackTrack.transform();
 			
-				HashMap<Exam, List<Termin>> final_solution = CSP_Algorithm.solution;
+			try {
+				myWriter = new FileWriter(resenjeFileName);
 				
-				Set<Exam> exams_output = final_solution.keySet();
-	
-				for(int row = 1; row < 5; ++row) {
-					for(int column = 1; column < rooms.size()+1; ++column) {
+				for(int day = 1; day <= duration; ++day) {
+					
+					String [][] matrix = new String[5][rooms.size()+1];
 						
-						for(Exam e : exams_output) {
-							
-							if(e.getDayOfTrial() == day) {
+					matrix[0][0] = "Dan" + day;
+						
+					for(int i = 1; i < 5; i++) {
+						matrix[i][0] = termins[i-1]; 
+					}
+						
+					for(int j=1; j<rooms.size()+1; j++) {
+						matrix[0][j] = rooms.get(j-1).getName();
+					}
+						
+					Set<Exam> exams_output = final_solution.keySet();
+			
+					for(int row = 1; row < 5; ++row) {
+						for(int column = 1; column < rooms.size()+1; ++column) {
 								
-								for(Termin t : final_solution.get(e)) {
+							for(Exam e : exams_output) {
 									
-									if(t.getRoom().getName() == matrix[0][column] && t.getTime().equals(matrix[row][0])) {
+								if(e.getDayOfTrial() == day) {
 										
-										matrix[row][column] = e.getExamCodee();
+									for(Termin t : final_solution.get(e)) {
+											
+										if(t.getRoom().getName() == matrix[0][column] && t.getTime().equals(matrix[row][0])) {
+											
+											matrix[row][column] = e.getExamCodee();
+										}
 									}
 								}
 							}
 						}
 					}
-				}
-				
-				for(int i = 0; i < 5; i++) {
-					for(int j = 0; j < rooms.size()+1; j++) {
-						if(j!=rooms.size()) {
-							if(matrix[i][j]==null) {
-								System.out.print("X,");
-								myWriter.write("X,");
+						
+					for(int i = 0; i < 5; i++) {
+						for(int j = 0; j < rooms.size()+1; j++) {
+							if(j!=rooms.size()) {
+								if(matrix[i][j]==null) {
+									System.out.print("X,");
+									myWriter.write("X,");
+								}
+								else {
+									System.out.print(matrix[i][j] + ",");
+									myWriter.write(matrix[i][j] + ",");
+								}
 							}
 							else {
-								System.out.print(matrix[i][j] + ",");
-								myWriter.write(matrix[i][j] + ",");
+								if(matrix[i][j]==null) {
+									System.out.print("X");
+									myWriter.write("X");
+								}
+								else {
+									System.out.print(matrix[i][j]);
+									myWriter.write(matrix[i][j]);
+								}
 							}
 						}
-						else {
-							if(matrix[i][j]==null) {
-								System.out.print("X");
-								myWriter.write("X");
-							}
-							else {
-								System.out.print(matrix[i][j]);
-								myWriter.write(matrix[i][j]);
-							}
-						}
+						System.out.println();
+						myWriter.write("\n");;
 					}
-					System.out.println();
-					myWriter.write("\n");;
-				}
-			myWriter.write("\n");
+				myWriter.write("\n");
+			}
+			myWriter.close();
+			
+		} catch (IOException e1) {
+			e1.printStackTrace();
 		}
-		myWriter.close();
-		
-	} catch (IOException e1) {
-		e1.printStackTrace();
 	}
 		
 	return;

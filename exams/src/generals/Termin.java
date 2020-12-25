@@ -4,12 +4,14 @@ public class Termin {
 	private Room room;
 	private String time;
 	private int day;
-
+	private String s_name;
+	
 	public Termin(Room room, String time, int day) {
 		super();
 		this.room = room;
 		this.time = time ;
 		this.day = day;
+		this.s_name = day + time;
 	}
 	
 	@Override
@@ -44,4 +46,13 @@ public class Termin {
 	public void setDay(int day) {
 		this.day = day;
 	}
+
+	public String getS_name() {
+		return s_name;
+	}
+
+	public void setS_name(String s_name) {
+		this.s_name = s_name;
+	}
+	
 }
